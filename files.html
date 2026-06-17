@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOAA Satellite Tracking Dashboard</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI,sans-serif;
+}
+
+body{
+    background:#0f172a;
+    color:white;
+}
+
+header{
+    background:#1e293b;
+    text-align:center;
+    padding:20px;
+    box-shadow:0 0 10px rgba(0,0,0,0.4);
+}
+
+header h1{
+    color:#38bdf8;
+}
+
+#clock{
+    margin-top:10px;
+    color:#facc15;
+    font-size:18px;
+}
+
+.container{
+    padding:20px;
+}
+
+.status-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 4px 8px rgba(0,0,0,0.3);
+}
+
+.card h2{
+    margin-bottom:15px;
+    color:#38bdf8;
+}
+
+.status-card{
+    text-align:center;
+}
+
+.main-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+input[type=text],
+input[type=number]{
+    width:100%;
+    padding:10px;
+    margin-top:8px;
+    margin-bottom:12px;
+    border:none;
+    border-radius:6px;
+}
+
+input[type=range]{
+    width:100%;
+}
+
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:6px;
+    margin:5px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.start{background:#16a34a;color:white;}
+.stop{background:#dc2626;color:white;}
+.auto{background:#2563eb;color:white;}
+.manual{background:#f59e0b;color:black;}
+
+.map-box{
+    height:250px;
+    border:2px dashed #64748b;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-radius:10px;
+}
+
+.image-box img{
+    width:100%;
+    border-radius:10px;
+}
+
+textarea{
+    width:100%;
+    height:180px;
+    border:none;
+    border-radius:8px;
+    padding:10px;
+}
+
+.compass{
+    text-align:center;
+    font-size:90px;
+}
+
+.footer{
+    text-align:center;
+    padding:20px;
+    color:#94a3b8;
+}
+
+@media(max-width:900px){
+    .main-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🛰 Automatic NOAA Satellite Tracking System</h1>
+    <p>Raspberry Pi 4B • RTL-SDR • Flask • Dual Axis Rotor</p>
+    <div id="clock"></div>
+</header>
+
+<div class="container">
+
+    <div class="status-grid">
+
+        <div class="card status-card">
+            <h3>Satellite</h3>
+            <p>NOAA-19</p>
+        </div>
+
+        <div class="card status-card">
+            <h3>Signal Strength</h3>
+            <p>87%</p>
+        </div>
+
+        <div class="card status-card">
+            <h3>Rotor Status</h3>
+            <p>Connected</p>
+        </div>
+
+        <div class="card status-card">
+            <h3>System</h3>
+            <p>Online</p>
+        </div>
+
+    </div>
+
+    <div class="main-grid">
+
+        <div class="card">
+            <h2>🌍 Location Settings</h2>
+
+            <label>Country</label>
+            <input type="text" placeholder="Enter Country">
+
+            <label>Latitude</label>
+            <input type="number" placeholder="Latitude">
+
+            <label>Longitude</label>
+            <input type="number" placeholder="Longitude">
+        </div>
+
+        <div class="card">
+            <h2>📡 NOAA Satellite Information</h2>
+
+            <p><b>Satellite:</b> NOAA-19</p><br>
+            <p><b>Frequency:</b> 137.100 MHz</p><br>
+            <p><b>Status:</b> Visible</p><br>
+            <p><b>Pass Duration:</b> 12 min</p>
+        </div>
+
+        <div class="card">
+            <h2>🎯 Antenna Control</h2>
+
+            <label>Azimuth Angle</label>
+            <input type="range" min="0" max="360" value="180" id="azimuth">
+            <p>Azimuth: <span id="azValue">180°</span></p>
+
+            <br>
+
+            <label>Elevation Angle</label>
+            <input type="range" min="0" max="180" value="45" id="elevation">
+            <p>Elevation: <span id="elValue">45°</span></p>
+
+            <br>
+
+            <button class="start">Start Tracking</button>
+            <button class="stop">Stop</button>
+            <button class="auto">Auto Mode</button>
+            <button class="manual">Manual Mode</button>
+        </div>
+
+        <div class="card">
+            <h2>🧭 Antenna Direction</h2>
+
+            <div class="compass">
+                🧭
+            </div>
+
+            <p>Current Direction Visualization</p>
+        </div>
+
+        <div class="card">
+            <h2>🍓 Raspberry Pi 4B Status</h2>
+
+            <p>Model : Raspberry Pi 4B</p><br>
+            <p>CPU Temperature : 42°C</p><br>
+            <p>CPU Usage : 38%</p><br>
+            <p>RAM Usage : 2.4 GB / 8 GB</p><br>
+            <p>Storage Free : 48 GB</p><br>
+            <p>GPIO Status : Active</p><br>
+            <p>Network : Connected</p>
+        </div>
+
+        <div class="card">
+            <h2>📡 RTL-SDR Status</h2>
+
+            <p>Device : RTL-SDR V3</p><br>
+            <p>Frequency : 137.100 MHz</p><br>
+            <p>Gain : 38 dB</p><br>
+            <p>Sample Rate : 2.4 MSPS</p><br>
+            <p>Signal Quality : Excellent</p><br>
+            <p>Status : Receiving</p>
+        </div>
+
+        <div class="card">
+            <h2>🔄 Rotor Driver Status</h2>
+
+            <p>Azimuth Motor : Connected</p><br>
+            <p>Elevation Motor : Connected</p><br>
+            <p>Current Azimuth : 180°</p><br>
+            <p>Current Elevation : 45°</p><br>
+            <p>Tracking Mode : Auto</p>
+        </div>
+
+        <div class="card">
+            <h2>🔧 Hardware Monitoring</h2>
+
+            <p>RTL-SDR : Connected</p><br>
+            <p>GPS Module : Active</p><br>
+            <p>IMU Sensor : Active</p><br>
+            <p>Azimuth Motor : Ready</p><br>
+            <p>Elevation Motor : Ready</p>
+        </div>
+
+        <div class="card">
+            <h2>🗺 Live Tracking Map</h2>
+
+            <div class="map-box">
+                Satellite Tracking Visualization
+            </div>
+        </div>
+
+        <div class="card image-box">
+            <h2>🖼 NOAA Weather Image</h2>
+
+            <img src="https://via.placeholder.com/800x400.png?text=NOAA+Satellite+Image"
+            alt="NOAA Image">
+        </div>
+
+        <div class="card">
+            <h2>📝 Activity Logs</h2>
+
+            <textarea placeholder="Tracking events, antenna movement logs, NOAA reception logs..."></textarea>
+        </div>
+
+        <div class="card">
+            <h2>⚡ Backend Status</h2>
+
+            <p>Flask Server : Running</p><br>
+            <p>GPS Data : Available</p><br>
+            <p>Satellite Data : Available</p><br>
+            <p>RTL-SDR Stream : Active</p><br>
+            <p>Rotor Controller : Connected</p>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="footer">
+    Automatic NOAA Satellite Tracking Dashboard | Raspberry Pi 4B Ground Station
+</div>
+
+<script>
+
+function updateClock(){
+    const now = new Date();
+    document.getElementById("clock").innerHTML =
+    now.toLocaleString();
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+const azimuth=document.getElementById("azimuth");
+const elevation=document.getElementById("elevation");
+
+const azValue=document.getElementById("azValue");
+const elValue=document.getElementById("elValue");
+
+azimuth.oninput=function(){
+    azValue.innerHTML=this.value+"°";
+}
+
+elevation.oninput=function(){
+    elValue.innerHTML=this.value+"°";
+}
+
+</script>
+
+</body>
+</html>
